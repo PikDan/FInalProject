@@ -24,11 +24,19 @@ Docker — многоступенчатый Dockerfile, база данных м
 
 ;p
 
+# Запускать только из корневой директории проекта:
+```bash
+cd todo-app
+go run main.go
+```
+
 Запуск без пароля:go run .
-Запуск с паролем:Linux
+go run .   Затем, откройте браузер по адресу: http://localhost:7540
+
+Запуск с паролем для Linux
 TODO_PASSWORD=mysecret go run .
 
-Windows PowerShell
+Для Windows PowerShell
 $env:TODO_PASSWORD="parolb"
 go run .
 
@@ -40,6 +48,7 @@ Windows PowerShell
 $env:TODO_PORT="8080"
 $env:TODO_DBFILE="C:\data\scheduler.db"
 go run .
+
 Откройте браузер по адресу: http://localhost:7540 (или другой порт, если переопределили TODO_PORT).
 
 
@@ -51,6 +60,9 @@ var DBFile = "../scheduler.db"
 var FullNextDate = true         
 var Search = true               
 var Token = ``           // JWT-токен (нужен только если задан TODO_PASSWORD)
+
+
+#  Аутентификации
 
 Запуск без аутентификации: go test ./tests -v
 Запуск с аутентификацией: 
@@ -81,9 +93,8 @@ docker run -d \
 PowerShell
 docker run -d `
   -p 7540:7540 `
-  -v C:\Users\Danya\Documents\todo-app:/data `
+  -v C:\Users\user\Documents\todo-app:/data `
   -e TODO_PASSWORD=mysecret `
   --name todo-app `
   todo-app
 
-# Откройте браузер по адресу: http://localhost:7540
