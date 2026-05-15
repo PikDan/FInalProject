@@ -6,13 +6,12 @@ import (
 	"net/http"
 )
 
-// errorResponse — стандартный JSON-ответ с ошибкой.
 type errorResponse struct {
 	Error string `json:"error"`
 }
 
-// writeJSON сериализует data в JSON и пишет в w.
-func writeJSON(w http.ResponseWriter, data any) {
+// writeJSON сериализует data в JSON и пишет в w с указанным HTTP-кодом.
+func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	b, err := json.Marshal(data)
 	if err != nil {
@@ -20,10 +19,10 @@ func writeJSON(w http.ResponseWriter, data any) {
 		w.Write([]byte(fmt.Sprintf(`{"error":"%s"}`, err.Error())))
 		return
 	}
+	w.WriteHeader(status)
 	w.Write(b)
 }
 
-// itoa конвертирует int64 в строку без импорта strconv в каждом файле.
 func itoa(n int64) string {
 	return fmt.Sprintf("%d", n)
 }

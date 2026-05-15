@@ -31,19 +31,19 @@ type signinRequest struct {
 func signinHandler(w http.ResponseWriter, r *http.Request) {
 	var req signinRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, errorResponse{Error: err.Error()})
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error()})
 		return
 	}
 
 	pass := os.Getenv("TODO_PASSWORD")
 	if pass == "" {
 		// Пароль не задан — аутентификация отключена
-		writeJSON(w, errorResponse{Error: "аутентификация не настроена"})
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: "аутентификация не настроена"})
 		return
 	}
 
 	if req.Password != pass {
-		writeJSON(w, errorResponse{Error: "неверный пароль"})
+		writeJSON(w, http.StatusUnauthorized, errorResponse{Error: "неверный пароль"})
 		return
 	}
 
@@ -54,9 +54,9 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	tokenStr, err := token.SignedString(jwtSecret())
 	if err != nil {
-		writeJSON(w, errorResponse{Error: err.Error()})
+		writeJSON(w, http.StatusInternalServerError, errorResponse{Error: err.Error()})
 		return
 	}
 
-	writeJSON(w, map[string]string{"token": tokenStr})
+	writeJSON(w, http.StatusOK, map[string]string{"token": tokenStr})
 }

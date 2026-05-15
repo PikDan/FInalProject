@@ -17,31 +17,30 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 1. Десериализация JSON из тела запроса
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
-		writeJSON(w, errorResponse{Error: err.Error()})
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error()})
 		return
 	}
 
 	// 2. Заголовок обязателен
 	if task.Title == "" {
-		writeJSON(w, errorResponse{Error: "не указан заголовок задачи"})
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: "не указан заголовок задачи"})
 		return
 	}
 
 	// 3. Проверяем и корректируем дату
 	if err := checkDate(&task); err != nil {
-		writeJSON(w, errorResponse{Error: err.Error()})
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error()})
 		return
 	}
 
 	// 4. Добавляем в БД
 	id, err := db.AddTask(&task)
 	if err != nil {
-		writeJSON(w, errorResponse{Error: err.Error()})
+		writeJSON(w, http.StatusInternalServerError, errorResponse{Error: err.Error()})
 		return
 	}
 
-	// 5. Возвращаем id как строку (фронтенд ожидает string)
-	writeJSON(w, map[string]string{"id": itoa(id)})
+	writeJSON(w, http.StatusCreated, map[string]string{"id": itoa(id)})
 }
 
 // checkDate проверяет и при необходимости корректирует task.Date.

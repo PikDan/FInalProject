@@ -55,14 +55,14 @@ func nextDateHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		now, err = time.Parse(DateFormat, nowStr)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("invalid now: %v", err), http.StatusBadRequest)
+			writeJSON(w, http.StatusBadRequest, errorResponse{Error: fmt.Sprintf("invalid now: %v", err)})
 			return
 		}
 	}
 
 	next, err := NextDate(now, date, repeat)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error()})
 		return
 	}
 
@@ -91,7 +91,6 @@ func nextDateD(now, start time.Time, parts []string) (string, error) {
 	if err != nil || n < 1 || n > 400 {
 		return "", fmt.Errorf("d: invalid interval %q (must be 1..400)", parts[1])
 	}
-
 	cur := start
 	for !afterBoth(cur, now, start) {
 		cur = cur.AddDate(0, 0, n)
