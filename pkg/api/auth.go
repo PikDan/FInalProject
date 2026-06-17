@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -24,7 +25,9 @@ func getToken(r *http.Request) string {
 func authError(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusUnauthorized)
-	w.Write([]byte(`{"error":"authentification required"}`))
+	if _, err := w.Write([]byte(`{"error":"authentification required"}`)); err != nil {
+		log.Printf("authError: failed to write response: %v", err)
+	}
 }
 
 func auth(next http.HandlerFunc) http.HandlerFunc {

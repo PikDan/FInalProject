@@ -30,7 +30,7 @@ cd todo-app
 go run main.go
 ```
 
-Запуск без пароля:go run .
+Запуск без пароля:
 go run .   Затем, откройте браузер по адресу: http://localhost:7540
 
 Запуск с паролем для Linux
